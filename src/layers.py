@@ -48,9 +48,11 @@ class Affine:
         예시 shape:
             x (4, 784) @ W (784, 128) -> (4, 128), 여기에 b (128,)가 각 행에 더해집니다.
         """
+        # 순전파 계산, 이후 역전파 계산에 사용
         # TODO 1: backward에서 다시 써야 하므로 입력 x를 self.x에 저장하세요.
+        self.x = x
         # TODO 2: x @ W + b 를 계산해 반환하세요. b는 broadcasting으로 모든 행에 더해집니다.
-        raise NotImplementedError("Affine.forward를 구현하세요.")
+        return x @ self.W + self.b
 
     def backward(self, dout):
         """
@@ -71,7 +73,6 @@ class Affine:
         # TODO 2: self.db를 계산하세요. bias는 batch의 모든 샘플에 더해졌으므로
         #         gradient는 batch 방향으로 합쳐야 합니다.
         # TODO 3: dx를 계산해 반환하세요.
-        raise NotImplementedError("Affine.backward를 구현하세요.")
 
 
 class BatchNorm:

@@ -35,7 +35,13 @@ class ReLU:
         """
         # TODO 1: x <= 0 인 위치를 self.mask에 저장하세요. (backward에서 사용합니다)
         # TODO 2: x를 복사한 뒤 mask 위치를 0으로 만들어 반환하세요.
-        raise NotImplementedError("ReLU.forward를 구현하세요.")
+        # 0 이하인 칸을 True로 표시한 bool 배열을 저장
+        self.mask = x <= 0
+        # self.mask 전의 x원본을 copy
+        out = x.copy()
+        # out에 self.mask 한값에 T F에따라 0을 채움=>T인 칸은 0, F인 칸은 x 원소 그대로
+        out[self.mask] = 0
+        return out
 
     def backward(self, dout):
         """

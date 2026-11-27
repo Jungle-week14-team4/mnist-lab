@@ -40,7 +40,7 @@ class SoftmaxWithLoss:
                (그래도 softmax 결과는 수학적으로 동일합니다. 왜 그런지 생각해 보세요.)
             2) exp를 취하고 행 방향 합으로 나눠 확률을 만듭니다. 각 행의 합은 1이 됩니다.
             3) 확률을 self.y_prob에, 정답을 self.y_true에 저장합니다. backward에서 씁니다.
-            4) 정답 클래스 확률의 log를 취해 부호를 바꾸고 batch 평균을 냅니다.
+            4) 정답 클래스 확률의 log를 취해 / 부호를 바꾸고 / batch 평균을 냅니다./
                log(0)을 피하려면 np.clip(확률, 1e-7, 1.0)처럼 아주 작은 하한을 둡니다.
                주의: log(확률 + 1e-7)처럼 더하는 방식은 backward 식과 미세하게 달라져
                gradient check(허용 상대 오차 1e-6)가 1e-5 수준의 오차로 실패할 수 있습니다.
@@ -50,7 +50,18 @@ class SoftmaxWithLoss:
         검증: 모든 logits가 0이면 확률이 모두 1/10이므로 손실은 ln(10) = 2.3026 이 됩니다.
         """
         # TODO: 위 1~4 순서대로 구현하세요.
-        raise NotImplementedError("SoftmaxWithLoss.forward를 구현하세요.")
+        exp_vals = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+        self.y_prob = exp_vals / np.sum(exp_vals, axis=1, keepdims=True)
+        self.y_true = y_true
+        # batch_size = 샘플수임. logits.shape의 첫째항 = 샘플수
+        batch_size = logits.shape[0]
+        correct = self.y_prob[np.arange(batch_size), y_true]
+        # 안전장치 
+        correct = np.clip(correct, 1e-7, 1.0)
+        # 정답일 확률에 음수를 취해 틀린 정도로 바꿈
+        return np.mean(-np.log(correct))
+        
+
 
     def backward(self):
         """
